@@ -8,13 +8,13 @@ int main(){
 		cout<<"Enter a valid number";
 	}
 	int n1=0,n2=1,n3;
+	cout<<n1<<" "<<n2<<" ";
 	int i;
 	for(i=2;i<n;++i){
-		cout<<n1<<" "<<n2<<" ";
 		n3=n1+n2;
-		cout<<n3<<" ";
 		n1=n2;
 		n2=n3;
+		cout<<n3<<" ";
 	}
 
 	return 0;
