@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 int main(){
-	int n,arr[n],sum=0;
+	int n,arr[100],sum=0;
 	cout<<"Enter the number of elements you want to enter in array:";
 	cin>>n;
 	for(int i=0;i<n;i++){
