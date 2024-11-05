@@ -1,0 +1,100 @@
+-- for creating tables
+
+CREATE TABLE PERSON (
+    driver_id VARCHAR(20) PRIMARY KEY,
+    name VARCHAR(50),
+    address VARCHAR(100)
+);
+
+CREATE TABLE CAR (
+    regno VARCHAR(20) PRIMARY KEY,
+    model VARCHAR(50),
+    year INT
+);
+
+CREATE TABLE ACCIDENT (
+    report_number INT PRIMARY KEY,
+    accd_date DATE,
+    location VARCHAR(100)
+);
+
+CREATE TABLE OWNS (
+    driver_id VARCHAR(20),
+    regno VARCHAR(20),
+    PRIMARY KEY (driver_id, regno),
+    FOREIGN KEY (driver_id) REFERENCES PERSON(driver_id),
+    FOREIGN KEY (regno) REFERENCES CAR(regno)
+);
+
+CREATE TABLE PARTICIPATED (
+    driver_id VARCHAR(20),
+    regno VARCHAR(20),
+    report_number INT,
+    damage_amount INT,
+    PRIMARY KEY (driver_id, regno, report_number),
+    FOREIGN KEY (driver_id) REFERENCES PERSON(driver_id),
+    FOREIGN KEY (regno) REFERENCES CAR(regno),
+    FOREIGN KEY (report_number) REFERENCES ACCIDENT(report_number)
+);
+
+
+-- inserting records
+INSERT INTO PERSON (driver_id, name, address) VALUES
+('D001', 'Sanchit', 'Harduaganj'),
+('D002', 'Akhil', 'Aligarh'),
+('D003', 'Aakash', 'Moradabad'),
+('D004', 'Arav', 'Kanpur'),
+('D005', 'Rehan', 'Rampur');
+
+INSERT INTO CAR (regno, model, year) VALUES
+('R001', 'Toyota', 2005),
+('R002', 'Honda', 2008),
+('R003', 'Ford', 2010),
+('R004', 'Nissan', 2008),
+('R005', 'Chevrolet', 2007);
+
+INSERT INTO ACCIDENT (report_number, accd_date, location) VALUES
+(10, '2008-05-12', 'Delhi'),
+(11, '2009-07-22', 'Noida'),
+(12, '2008-09-30', 'Aligarh'),
+(13, '2010-11-15', 'Meerut'),
+(14, '2011-02-10', 'Kanpur');
+
+INSERT INTO OWNS (driver_id, regno) VALUES
+('D001', 'R001'),
+('D002', 'R002'),
+('D003', 'R003'),
+('D004', 'R004'),
+('D005', 'R005');
+
+INSERT INTO PARTICIPATED (driver_id, regno, report_number, damage_amount) VALUES
+('D001', 'R001', 10, 5000),
+('D002', 'R002', 11, 15000),
+('D003', 'R003', 12, 20000),
+('D004', 'R004', 13, 3000),
+('D005', 'R005', 14, 10000);
+
+
+-- updating damage account
+UPDATE PARTICIPATED
+SET damage_amount = 25000
+WHERE regno = 'R003' AND report_number = 12;
+
+
+-- adding new accident
+INSERT INTO ACCIDENT (report_number, accd_date, location) VALUES
+(15, '2012-06-18', 'Harduaganj');
+
+
+-- finding the total number of people who owned cars involved in accidents in 2008
+SELECT COUNT(DISTINCT OWNS.driver_id) AS num_people
+FROM OWNS
+JOIN PARTICIPATED ON OWNS.regno = PARTICIPATED.regno
+JOIN ACCIDENT ON PARTICIPATED.report_number = ACCIDENT.report_number
+WHERE strftime('%Y', ACCIDENT.accd_date) = '2008';
+
+-- finding the number of accidents involving cars of a specific model
+SELECT COUNT(DISTINCT PARTICIPATED.report_number) AS num_accidents
+FROM PARTICIPATED
+JOIN CAR ON PARTICIPATED.regno = CAR.regno
+WHERE CAR.model = 'Toyota';
