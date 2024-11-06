@@ -1,0 +1,161 @@
+-- Create BRANCH table
+CREATE TABLE BRANCH (
+    branch_name VARCHAR(50) PRIMARY KEY,
+    branch_city VARCHAR(50),
+    assets REAL
+);
+
+-- Create ACCOUNT table with foreign key to BRANCH
+CREATE TABLE ACCOUNT (
+    accno INT PRIMARY KEY,
+    branch_name VARCHAR(50),
+    balance REAL,
+    FOREIGN KEY (branch_name) REFERENCES BRANCH(branch_name)
+);
+
+-- Create DEPOSITOR table with foreign key to ACCOUNT
+CREATE TABLE DEPOSITOR (
+    customer_name VARCHAR(50),
+    accno INT,
+    PRIMARY KEY (customer_name, accno),
+    FOREIGN KEY (accno) REFERENCES ACCOUNT(accno)
+);
+
+-- Create CUSTOMER table
+CREATE TABLE CUSTOMER (
+    customer_name VARCHAR(50) PRIMARY KEY,
+    customer_street VARCHAR(50),
+    customer_city VARCHAR(50)
+);
+
+-- Create LOAN table with foreign key to BRANCH
+CREATE TABLE LOAN (
+    loan_number INT PRIMARY KEY,
+    branch_name VARCHAR(50),
+    amount REAL,
+    FOREIGN KEY (branch_name) REFERENCES BRANCH(branch_name)
+);
+
+-- Create BORROWER table with foreign key to LOAN
+CREATE TABLE BORROWER (
+    customer_name VARCHAR(50),
+    loan_number INT,
+    PRIMARY KEY (customer_name, loan_number),
+    FOREIGN KEY (loan_number) REFERENCES LOAN(loan_number)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Insert data into BRANCH table
+INSERT INTO BRANCH VALUES ('Main', 'New York', 5000000);
+INSERT INTO BRANCH VALUES ('Downtown', 'New York', 3000000);
+INSERT INTO BRANCH VALUES ('Midtown', 'New York', 2000000);
+INSERT INTO BRANCH VALUES ('Uptown', 'Los Angeles', 2500000);
+INSERT INTO BRANCH VALUES ('Central', 'Chicago', 3500000);
+
+-- Insert data into ACCOUNT table
+INSERT INTO ACCOUNT VALUES (101, 'Main', 10000);
+INSERT INTO ACCOUNT VALUES (102, 'Main', 15000);
+INSERT INTO ACCOUNT VALUES (103, 'Downtown', 20000);
+INSERT INTO ACCOUNT VALUES (104, 'Midtown', 30000);
+INSERT INTO ACCOUNT VALUES (105, 'Uptown', 25000);
+
+-- Insert data into DEPOSITOR table
+INSERT INTO DEPOSITOR VALUES ('Adnan', 101);
+INSERT INTO DEPOSITOR VALUES ('Rayyan', 102);
+INSERT INTO DEPOSITOR VALUES ('Adil', 103);
+INSERT INTO DEPOSITOR VALUES ('Amir', 104);
+INSERT INTO DEPOSITOR VALUES ('Rehan', 105);
+
+-- Insert data into CUSTOMER table
+INSERT INTO CUSTOMER VALUES ('Adnan', '123 Main St', 'New York');
+INSERT INTO CUSTOMER VALUES ('Rayyan', '456 Elm St', 'New York');
+INSERT INTO CUSTOMER VALUES ('Amir', '789 Oak St', 'Chicago');
+INSERT INTO CUSTOMER VALUES ('Rehan', '101 Pine St', 'Los Angeles');
+INSERT INTO CUSTOMER VALUES ('Samar', '202 Maple St', 'New York');
+
+-- Insert data into LOAN table
+INSERT INTO LOAN VALUES (201, 'Main', 5000);
+INSERT INTO LOAN VALUES (202, 'Downtown', 10000);
+INSERT INTO LOAN VALUES (203, 'Midtown', 15000);
+INSERT INTO LOAN VALUES (204, 'Uptown', 20000);
+INSERT INTO LOAN VALUES (205, 'Central', 12000);
+
+-- Insert data into BORROWER table
+INSERT INTO BORROWER VALUES ('Adnan', 201);
+INSERT INTO BORROWER VALUES ('Rayyan', 202);
+INSERT INTO BORROWER VALUES ('Amir', 203);
+INSERT INTO BORROWER VALUES ('Rehan', 204);
+INSERT INTO BORROWER VALUES ('Samar', 205);
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT d.customer_name
+FROM DEPOSITOR d
+JOIN ACCOUNT a ON d.accno = a.accno
+WHERE a.branch_name = 'Main'
+GROUP BY d.customer_name
+HAVING COUNT(d.accno) >= 2;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT d.customer_name
+FROM DEPOSITOR d
+JOIN ACCOUNT a ON d.accno = a.accno
+JOIN BRANCH b ON a.branch_name = b.branch_name
+WHERE b.branch_city = 'New York'
+GROUP BY d.customer_name
+HAVING COUNT(DISTINCT a.branch_name) = (SELECT COUNT(*) 
+                                        FROM BRANCH 
+                                        WHERE branch_city = 'New York');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DELETE FROM ACCOUNT
+WHERE branch_name IN (SELECT branch_name 
+                      FROM BRANCH 
+                      WHERE branch_city = 'New York');
