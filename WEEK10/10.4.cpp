@@ -10,10 +10,6 @@ union Address {
     char state[50];
     char zip[10];
 };
-union Address1 {
-    string name1;
-    string home_address1;
-};
 
 int main() {
     Address addr;
@@ -35,9 +31,6 @@ int main() {
     cout << "Zip Code: " << addr.zip << endl;  
     
     
-    Address1 add1;
-    cout << "Enter your name1: ";
-    getline(cin, add1.name1);
 
     return 0;
 }
