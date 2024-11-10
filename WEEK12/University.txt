@@ -1,0 +1,115 @@
+CREATE TABLE University (
+    university_id INT PRIMARY KEY,
+    university_name VARCHAR(100),
+    location VARCHAR(100),
+    established_year INT
+);
+CREATE INDEX idx_location ON University(location);
+CREATE TABLE Department (
+    department_id INT PRIMARY KEY,
+    department_name VARCHAR(100),
+    university_id INT,
+    head_of_department VARCHAR(100),
+    FOREIGN KEY (university_id) REFERENCES University(university_id)
+);
+CREATE INDEX idx_department_name ON Department(department_name);
+CREATE TABLE Program (
+    program_id INT PRIMARY KEY,
+    program_name VARCHAR(100),
+    department_id INT,
+    duration INT,  
+    FOREIGN KEY (department_id) REFERENCES Department(department_id)
+);
+CREATE INDEX idx_program_name ON Program(program_name);
+CREATE TABLE Course (
+    course_id INT PRIMARY KEY,
+    course_name VARCHAR(100),
+    program_id INT,
+    credits INT,
+    FOREIGN KEY (program_id) REFERENCES Program(program_id)
+);
+CREATE INDEX idx_course_name ON Course(course_name);
+CREATE TABLE Syllabus (
+    syllabus_id INT PRIMARY KEY,
+    course_id INT,
+    syllabus_content TEXT,
+    FOREIGN KEY (course_id) REFERENCES Course(course_id)
+);
+CREATE INDEX idx_course_syllabus ON Syllabus(course_id);
+CREATE TABLE Faculty (
+    faculty_id INT PRIMARY KEY,
+    name VARCHAR(100),
+    specialization VARCHAR(100),
+    department_id INT,
+    university_id INT,
+    FOREIGN KEY (department_id) REFERENCES Department(department_id),
+    FOREIGN KEY (university_id) REFERENCES University(university_id)
+);
+CREATE INDEX idx_specialization ON Faculty(specialization);
+INSERT INTO University (university_id, university_name, location, established_year) VALUES
+(1, 'University of Delhi', 'Delhi', 1922),
+(2, 'Aligarh Muslim University', 'Aligarh', 1875),
+(3, 'Jawaharlal Nehru University', 'Delhi', 1969),
+(4, 'University of Jammu', 'Jammu', 1969),
+(5, 'Banaras Hindu University', 'Varanasi', 1916);
+INSERT INTO Department (department_id, department_name, university_id, head_of_department) VALUES
+(1, 'Computer Science', 1, 'Dr. Kumar'),
+(2, 'Mathematics', 2, 'Dr. Khan'),
+(3, 'Physics', 3, 'Dr. Singh'),
+(4, 'Electrical Engineering', 4, 'Dr. Sharma'),
+(5, 'Information Security', 5, 'Dr. Verma');
+INSERT INTO Program (program_id, program_name, department_id, duration) VALUES
+(1, 'B.Tech', 1, 4),
+(2, 'MCA', 2, 3),
+(3, 'PhD', 3, 5),
+(4, 'M.Tech', 4, 2),
+(5, 'B.Sc', 5, 3);
+INSERT INTO Course (course_id, course_name, program_id, credits) VALUES
+(1, 'Data Structures', 1, 3),
+(2, 'Database Management Systems', 2, 4),
+(3, 'Computer Architecture', 3, 3),
+(4, 'Network Security', 4, 4),
+(5, 'Information Security', 5, 3);
+INSERT INTO Syllabus (syllabus_id, course_id, syllabus_content) VALUES
+(1, 1, 'Basic concepts of data structures, Linked lists, Trees'),
+(2, 2, 'Relational model, SQL, Transactions'),
+(3, 3, 'Basic concepts of computer architecture, CPU design, Memory systems'),
+(4, 4, 'Concepts of network security, Firewalls, Intrusion detection systems'),
+(5, 5, 'Cryptography, Network Security protocols, Risk management');
+INSERT INTO Faculty (faculty_id, name, specialization, department_id, university_id) VALUES
+(1, 'Dr. Reddy', 'Cryptography', 1, 1),
+(2, 'Dr. Kapoor', 'Machine Learning', 2, 2),
+(3, 'Dr. Sharma', 'Quantum Computing', 3, 3),
+(4, 'Dr. Verma', 'Network Security', 4, 4),
+(5, 'Dr. Gupta', 'Information Security', 5, 5);
+SELECT university_name, location FROM University WHERE location = 'Delhi';
+SELECT department_name FROM Department WHERE university_id = 2;
+SELECT location FROM University WHERE university_name = 'Jawaharlal Nehru University';
+SELECT program_name FROM Program WHERE department_id IN (SELECT department_id FROM Department WHERE university_id = 4);
+SELECT DISTINCT u.university_name
+FROM University u
+JOIN Department d ON u.university_id = d.university_id
+JOIN Program p ON d.department_id = p.department_id
+WHERE p.program_name = 'MCA';
+SELECT c.course_name
+FROM Course c
+JOIN Program p ON c.program_id = p.program_id
+JOIN Department d ON p.department_id = d.department_id
+WHERE p.program_name = 'MCA' AND d.university_id = 2;
+SELECT f.name, u.university_name
+FROM Faculty f
+JOIN University u ON f.university_id = u.university_id
+WHERE f.specialization = 'Information Security';
+SELECT s.syllabus_content, u.university_name
+FROM Syllabus s
+JOIN Course c ON s.course_id = c.course_id
+JOIN Program p ON c.program_id = p.program_id
+JOIN Department d ON p.department_id = d.department_id
+JOIN University u ON d.university_id = u.university_id
+WHERE c.course_name = 'Computer Architecture';
+
+
+
+
+
+
